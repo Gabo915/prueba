@@ -65,8 +65,10 @@
             "development": {
               "browserTarget": "basico:build:development"
             }
+            
           },
           "defaultConfiguration": "development"
+
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -89,7 +91,8 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "proxyConfig": "proxy.conf.json"
           }
         }
       }
