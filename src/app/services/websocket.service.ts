@@ -1,12 +1,13 @@
-import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
+import { Injectable } from '@angular/core';
 import { Usuario } from '../classes/usuario';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
-  public usuario = Usuario;
+
+  public usuario: Usuario | null = null;
   public socketStatus = false;
 
   constructor(private socket: Socket) {
@@ -27,7 +28,6 @@ export class WebsocketService {
 
   emitir( evento: string, payload?: any, callback?: Function) {
     console.log('Emitiendo...', evento);
-
     this.socket.emit(evento, payload, callback);
 
   }
@@ -36,16 +36,36 @@ export class WebsocketService {
 
   }
   loginWS(nombre: string){
-    console.log('configurando..', nombre);
 
-    this.socket.emit('configurar-usuario', {nombre}, (resp: any)=>{
-      
-      console.log(resp);
-    })
-
-    //Podemos reciclar la funcion EMITIR de arriba 
-    /*this.emitir('configurar-usuario', {nombre}, (resp: any) => {
-      console.log(resp);
-    })*/
+    return new Promise((resolve, reject) =>{
+      this.socket.emit('configurar-usuario', {nombre}, (resp: any)=>{
+       
+          this.usuario = new Usuario(nombre);
+          this.guardarStorage();
+          resolve(resp);
+      });
+  
+      //Podemos reciclar la funcion EMITIR de arriba 
+      /*this.emitir('configurar-usuario', {nombre}, (resp: any) => {
+        console.log(resp);
+      })*/
+    });
   }
+
+  getUsuario(){
+    return this.usuario;
+  }
+
+  guardarStorage(){
+    if(this.usuario){
+      localStorage.setItem('usuario', JSON.stringify(this.usuario));
+    }
+  }
+
+  /*cargarStorage(){
+    if(localStorage.getItem('usuario')){
+      this.usuario = JSON.parse(localStorage.getItem('usuario'))
+
+    }
+  }*/
 }
